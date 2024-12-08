@@ -6,6 +6,8 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestTemplate;
 
+import java.lang.ref.SoftReference;
+
 @SpringBootApplication
 @EnableCaching
 public class DemoApplication {
@@ -13,7 +15,9 @@ public class DemoApplication {
     public static void main(String[] args) {
         SpringApplication.run(DemoApplication.class, args);
         Thread.currentThread().setName("Weather Application");
+        System.out.println("Hi This Is weather application..");
     }
+
 
     @Bean
     public RestTemplate restTemplate() {
