@@ -15,7 +15,6 @@ public class DemoApplication {
     public static void main(String[] args) {
         SpringApplication.run(DemoApplication.class, args);
         Thread.currentThread().setName("Weather Application");
-        System.out.println("Hi This Is weather application..");
     }
 
 
