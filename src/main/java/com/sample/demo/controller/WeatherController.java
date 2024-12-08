@@ -7,20 +7,23 @@ import com.sample.demo.service.WeatherService;
 import io.github.resilience4j.retry.annotation.Retry;
 import io.micrometer.core.instrument.Counter;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.time.Instant;
 
 @RestController
 @RequestMapping("/api")
+@Validated
 public class WeatherController {
     Logger logger = LoggerFactory.getLogger(WeatherService.class);
     private final WeatherService weatherService;
@@ -74,7 +77,7 @@ public class WeatherController {
     @Retry(name = Constant.DEMO, fallbackMethod = Constant.GET_FORECAST_CALLBACK)
     public ResponseEntity<APIResponse> getWeatherForecast(
             @RequestParam String cityName,
-            @RequestParam Integer numberOfDays) {
+            @RequestParam  @Min(1) @Max(5) Integer numberOfDays) {
         logger.info(Constant.API_LOGGER, Instant.now().toString(),
                 httpServletRequest.getMethod(), httpServletRequest.getRequestURI());
         totalRequestsCounter.increment();

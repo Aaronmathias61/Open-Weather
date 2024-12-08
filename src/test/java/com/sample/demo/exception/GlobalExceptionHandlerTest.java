@@ -2,6 +2,7 @@ package com.sample.demo.exception;
 
 import com.sample.demo.constant.MockConstants;
 import com.sample.demo.model.APIResponse;
+import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,6 +14,7 @@ import org.springframework.web.client.HttpClientErrorException;
 
 import java.net.ConnectException;
 import java.net.UnknownHostException;
+import java.util.HashSet;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -72,4 +74,13 @@ class GlobalExceptionHandlerTest {
         assertNotNull(response);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
+
+    @Test
+    void testHandleValidationExceptions() {
+        ConstraintViolationException constraintViolationException = new ConstraintViolationException(MockConstants.INCORRECT_CITY_NAME,new HashSet<>());
+        ResponseEntity<APIResponse> response = globalExceptionHandler.handleValidationExceptions(constraintViolationException);
+        assertNotNull(response);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    }
+
 }

@@ -10,6 +10,7 @@ public class Constant {
     public static final String CACHE_HIT = "cache_hits";
     public static final String CACHE_MISS = "cache_misses";
     public static final String WEATHER_CACHE = "weatherCache";
+    public static final String INVALID_INPUT = "Invalid Input";
     public static final String FORECAST_CACHE = "forecastCache";
     public static final String WEATHER_CACHE_KEY = "#cityName";
     public static final String UNLESS_RESULT = "#result == null";
