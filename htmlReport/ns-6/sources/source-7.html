@@ -1,0 +1,197 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > ForecastResponse</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.sample.demo.model</a>
+</div>
+
+<h1>Coverage Summary for Class: ForecastResponse (com.sample.demo.model)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+</tr>
+  <tr>
+    <td class="name">ForecastResponse$City</td>
+  </tr>
+  <tr>
+    <td class="name">ForecastResponse$Clouds</td>
+  </tr>
+  <tr>
+    <td class="name">ForecastResponse$Coordinates</td>
+  </tr>
+  <tr>
+    <td class="name">ForecastResponse$Main</td>
+  </tr>
+  <tr>
+    <td class="name">ForecastResponse$Sys</td>
+  </tr>
+  <tr>
+    <td class="name">ForecastResponse$WeatherData</td>
+  </tr>
+  <tr>
+    <td class="name">ForecastResponse$Wind</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.sample.demo.model;
+&nbsp;
+&nbsp;import com.fasterxml.jackson.annotation.JsonProperty;
+&nbsp;import lombok.Data;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;@Data
+&nbsp;public class ForecastResponse {
+&nbsp;    @JsonProperty(&quot;cod&quot;)
+&nbsp;    private String cod;
+&nbsp;    @JsonProperty(&quot;message&quot;)
+&nbsp;    private int message;
+&nbsp;    @JsonProperty(&quot;cnt&quot;)
+&nbsp;    private int cnt;
+&nbsp;    @JsonProperty(&quot;list&quot;)
+&nbsp;    private List&lt;WeatherData&gt; list;
+&nbsp;    @JsonProperty(&quot;city&quot;)
+&nbsp;    private City city;
+&nbsp;    @Data
+&nbsp;    public static class WeatherData {
+&nbsp;        @JsonProperty(&quot;dt&quot;)
+&nbsp;        private long dt;
+&nbsp;        @JsonProperty(&quot;main&quot;)
+&nbsp;        private Main main;
+&nbsp;        @JsonProperty(&quot;weather&quot;)
+&nbsp;        private List&lt;Weather&gt; weather;
+&nbsp;        @JsonProperty(&quot;clouds&quot;)
+&nbsp;        private Clouds clouds;
+&nbsp;        @JsonProperty(&quot;wind&quot;)
+&nbsp;        private Wind wind;
+&nbsp;        @JsonProperty(&quot;visibility&quot;)
+&nbsp;        private int visibility;
+&nbsp;        @JsonProperty(&quot;pop&quot;)
+&nbsp;        private double pop;
+&nbsp;        @JsonProperty(&quot;sys&quot;)
+&nbsp;        private Sys sys;
+&nbsp;        @JsonProperty(&quot;dt_txt&quot;)
+&nbsp;        private String dtTxt;
+&nbsp;    }
+&nbsp;
+&nbsp;    @Data
+&nbsp;    public static class Main {
+&nbsp;        @JsonProperty(&quot;temp&quot;)
+&nbsp;        private double temperature;
+&nbsp;        @JsonProperty(&quot;feels_like&quot;)
+&nbsp;        private double feelsLike;
+&nbsp;        @JsonProperty(&quot;temp_min&quot;)
+&nbsp;        private double temperatureMinimum;
+&nbsp;        @JsonProperty(&quot;temp_max&quot;)
+&nbsp;        private double temperatureMaximum;
+&nbsp;        @JsonProperty(&quot;pressure&quot;)
+&nbsp;        private int pressure;
+&nbsp;        @JsonProperty(&quot;sea_level&quot;)
+&nbsp;        private int seaLevel;
+&nbsp;        @JsonProperty(&quot;grnd_level&quot;)
+&nbsp;        private int groundLevel;
+&nbsp;        @JsonProperty(&quot;humidity&quot;)
+&nbsp;        private int humidity;
+&nbsp;        @JsonProperty(&quot;temp_kf&quot;)
+&nbsp;        private double tempKf;
+&nbsp;    }
+&nbsp;    @Data
+&nbsp;    public static class Clouds {
+&nbsp;        @JsonProperty(&quot;all&quot;)
+&nbsp;        private int all;
+&nbsp;    }
+&nbsp;    @Data
+&nbsp;    public static class Wind {
+&nbsp;        @JsonProperty(&quot;speed&quot;)
+&nbsp;        private double speed;
+&nbsp;        @JsonProperty(&quot;deg&quot;)
+&nbsp;        private int deg;
+&nbsp;        @JsonProperty(&quot;gust&quot;)
+&nbsp;        private double gust;
+&nbsp;    }
+&nbsp;    @Data
+&nbsp;    public static class Sys {
+&nbsp;        @JsonProperty(&quot;pod&quot;)
+&nbsp;        private String pod;
+&nbsp;    }
+&nbsp;    @Data
+&nbsp;    public static class City {
+&nbsp;        @JsonProperty(&quot;id&quot;)
+&nbsp;        private int id;
+&nbsp;        @JsonProperty(&quot;name&quot;)
+&nbsp;        private String name;
+&nbsp;        @JsonProperty(&quot;coord&quot;)
+&nbsp;        private Coordinates coordinates;
+&nbsp;        @JsonProperty(&quot;country&quot;)
+&nbsp;        private String country;
+&nbsp;        @JsonProperty(&quot;population&quot;)
+&nbsp;        private int population;
+&nbsp;        @JsonProperty(&quot;timezone&quot;)
+&nbsp;        private int timezone;
+&nbsp;        @JsonProperty(&quot;sunrise&quot;)
+&nbsp;        private long sunrise;
+&nbsp;        @JsonProperty(&quot;sunset&quot;)
+&nbsp;        private long sunset;
+&nbsp;    }
+&nbsp;    @Data
+&nbsp;    public static class Coordinates {
+&nbsp;        @JsonProperty(&quot;lat&quot;)
+&nbsp;        private double latitude;
+&nbsp;        @JsonProperty(&quot;lon&quot;)
+&nbsp;        private double longitude;
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-12-06 05:26</div>
+</div>
+</body>
+</html>

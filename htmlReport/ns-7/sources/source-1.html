@@ -1,0 +1,228 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > WeatherService</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.sample.demo.service</a>
+</div>
+
+<h1>Coverage Summary for Class: WeatherService (com.sample.demo.service)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">WeatherService</td>
+<td class="coverageStat">
+  <span class="percent">
+    16.7%
+  </span>
+  <span class="absValue">
+    (1/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    5.2%
+  </span>
+  <span class="absValue">
+    (3/58)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">WeatherService$$SpringCGLIB$$0</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    16.7%
+  </span>
+  <span class="absValue">
+    (1/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    5.2%
+  </span>
+  <span class="absValue">
+    (3/58)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.sample.demo.service;
+&nbsp;
+&nbsp;import com.fasterxml.jackson.core.JsonProcessingException;
+&nbsp;import com.sample.demo.constant.Constant;
+&nbsp;import com.sample.demo.exception.GlobalException;
+&nbsp;import com.sample.demo.model.*;
+&nbsp;import org.slf4j.Logger;
+&nbsp;import org.slf4j.LoggerFactory;
+&nbsp;import org.springframework.beans.factory.annotation.Value;
+&nbsp;import org.springframework.cache.annotation.Cacheable;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;import org.springframework.web.client.HttpClientErrorException;
+&nbsp;import org.springframework.web.client.RestTemplate;
+&nbsp;
+&nbsp;import java.time.Instant;
+&nbsp;import java.time.LocalDate;
+&nbsp;import java.util.Comparator;
+&nbsp;import java.util.List;
+&nbsp;import java.util.stream.Collectors;
+&nbsp;
+&nbsp;@Service
+&nbsp;public class WeatherService {
+&nbsp;    @Value(&quot;${weather.api.key}&quot;)
+&nbsp;    private String apiKey;
+&nbsp;    @Value(&quot;${weather.url}&quot;)
+&nbsp;    private String weatherURL;
+&nbsp;    @Value(&quot;${geocode.url}&quot;)
+&nbsp;    private String goeCodeURL;
+&nbsp;    @Value(&quot;${forecast.url}&quot;)
+&nbsp;    private String forecastURL;
+<b class="fc">&nbsp;    Logger logger = LoggerFactory.getLogger(WeatherService.class);</b>
+&nbsp;    private final RestTemplate restTemplate;
+&nbsp;
+&nbsp;
+<b class="fc">&nbsp;    public WeatherService(RestTemplate restTemplate) {</b>
+<b class="fc">&nbsp;        this.restTemplate = restTemplate;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Cacheable(value = Constant.WEATHER_CACHE, key = Constant.WEATHER_CACHE_KEY, unless = Constant.UNLESS_RESULT)
+&nbsp;    public WeatherResponse getWeather(String cityName) throws JsonProcessingException {
+<b class="nc">&nbsp;        logger.info(String.format(Constant.FETCHING_WEATHER_DATA, cityName, Instant.now().toString()));</b>
+&nbsp;        try {
+<b class="nc">&nbsp;            String url = String.format(weatherURL, cityName, apiKey);</b>
+<b class="nc">&nbsp;            ResponseEntity&lt;RawWeatherResponse&gt; weatherResponse = restTemplate.getForEntity(url, RawWeatherResponse.class);</b>
+<b class="nc">&nbsp;            logger.info(String.format(Constant.FETCHED_WEATHER_DATA, cityName, Instant.now().toString()));</b>
+<b class="nc">&nbsp;            return parseWeatherResponse(weatherResponse.getBody());</b>
+<b class="nc">&nbsp;        } catch (HttpClientErrorException.NotFound exception) {</b>
+<b class="nc">&nbsp;            logger.error(String.format(Constant.CITY_NOT_FOUND_EXCEPTION, cityName, Instant.now().toString()));</b>
+<b class="nc">&nbsp;            throw new GlobalException(String.format(Constant.CITY_NOT_FOUND, cityName));</b>
+<b class="nc">&nbsp;        } catch (HttpClientErrorException.Unauthorized exception) {</b>
+<b class="nc">&nbsp;            logger.error(String.format(Constant.UNAUTHORIZED_ACCESS_EXCEPTION, Instant.now().toString()));</b>
+<b class="nc">&nbsp;            throw new GlobalException(Constant.UNAUTHORIZED_ACCESS);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    private WeatherResponse parseWeatherResponse(RawWeatherResponse body) throws JsonProcessingException {
+<b class="nc">&nbsp;        WeatherResponse weatherResponse = new WeatherResponse();</b>
+<b class="nc">&nbsp;        weatherResponse.setCity(body.getCity());</b>
+<b class="nc">&nbsp;        weatherResponse.setWeatherDescription(body.getWeather().get(0).getDescription());</b>
+<b class="nc">&nbsp;        weatherResponse.setTimezone(body.getTimezone());</b>
+<b class="nc">&nbsp;        weatherResponse.setHumidity(body.getMainTemperature().getHumidity());</b>
+<b class="nc">&nbsp;        weatherResponse.setTemperature(body.getMainTemperature().getTemperature());</b>
+<b class="nc">&nbsp;        weatherResponse.setWindSpeed(body.getWind().getSpeed());</b>
+<b class="nc">&nbsp;        weatherResponse.setComfortIndex(body.getMainTemperature().getTemperature() - (body.getMainTemperature().getHumidity() / 5));</b>
+<b class="nc">&nbsp;        return weatherResponse;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Cacheable(value = Constant.FORECAST_CACHE, key = Constant.FORECAST_CACHE_KEY, unless = Constant.UNLESS_RESULT)
+&nbsp;    public List&lt;Forecast&gt; getWeatherForecast(String cityName, Integer numberOfDays) {
+<b class="nc">&nbsp;        logger.info(String.format(Constant.FETCHING_FORECAST_DATA, cityName, Instant.now().toString()));</b>
+&nbsp;        try {
+&nbsp;//            String actualUr = &quot;https://10.255.255.1:8080&quot;;
+<b class="nc">&nbsp;            String geoCode = String.format(goeCodeURL, cityName, apiKey);</b>
+<b class="nc">&nbsp;            ResponseEntity&lt;GeoCodingResponse[]&gt; geoCodeResponse = restTemplate.getForEntity(geoCode, GeoCodingResponse[].class);</b>
+<b class="nc">&nbsp;            GeoCodingResponse[] geoCodingResponses = geoCodeResponse.getBody();</b>
+<b class="nc">&nbsp;            GeoCodingResponse geoCodingResponse = null;</b>
+<b class="nc">&nbsp;            if (geoCodingResponses.length &gt; 0) {</b>
+<b class="nc">&nbsp;                geoCodingResponse = geoCodingResponses[0];</b>
+&nbsp;            } else {
+<b class="nc">&nbsp;                logger.error(String.format(Constant.CITY_NOT_FOUND_EXCEPTION, cityName, Instant.now().toString()));</b>
+<b class="nc">&nbsp;                throw new GlobalException(String.format(Constant.CITY_NOT_FOUND, cityName));</b>
+&nbsp;            }
+<b class="nc">&nbsp;            String url = String.format(forecastURL, geoCodingResponse.getLatitude(), geoCodingResponse.getLongitude(), apiKey);</b>
+<b class="nc">&nbsp;            ResponseEntity&lt;ForecastResponse&gt; rawForecastResponse = restTemplate.getForEntity(url, ForecastResponse.class);</b>
+&nbsp;//          Processing the Raw Forecast data to get only the needed fields using streams
+<b class="nc">&nbsp;            logger.info(String.format(Constant.FETCHED_FORECAST_DATA, cityName,Instant.now().toString()));</b>
+<b class="nc">&nbsp;            return rawForecastResponse.getBody().getList().stream()</b>
+<b class="nc">&nbsp;                    .map(forecastResponse -&gt; new Forecast(</b>
+<b class="nc">&nbsp;                            LocalDate.parse(forecastResponse.getDtTxt().substring(0, 10)),</b>
+<b class="nc">&nbsp;                            forecastResponse.getMain().getTemperature(),</b>
+<b class="nc">&nbsp;                            forecastResponse.getMain().getTemperatureMaximum(),</b>
+<b class="nc">&nbsp;                            forecastResponse.getMain().getTemperatureMinimum(),</b>
+<b class="nc">&nbsp;                            forecastResponse.getWeather().stream()</b>
+<b class="nc">&nbsp;                                    .map(Weather::getDescription).distinct().collect(Collectors.joining(&quot;, &quot;))))</b>
+<b class="nc">&nbsp;                    .collect(Collectors.groupingBy(Forecast::getDate)).entrySet().stream()</b>
+<b class="nc">&nbsp;                    .map(entry -&gt; {</b>
+<b class="nc">&nbsp;                        List&lt;Forecast&gt; dailyForecasts = entry.getValue();</b>
+<b class="nc">&nbsp;                        double avgTemp = dailyForecasts.stream().mapToDouble(Forecast::getAverageTemperature).average().orElse(Double.NaN);</b>
+<b class="nc">&nbsp;                        double maxTemp = dailyForecasts.stream().mapToDouble(Forecast::getMaximumTemperature).max().orElse(Double.NaN);</b>
+<b class="nc">&nbsp;                        double minTemp = dailyForecasts.stream().mapToDouble(Forecast::getMinimumTemperature).min().orElse(Double.NaN);</b>
+<b class="nc">&nbsp;                        String weatherDescriptions = dailyForecasts.stream().map(Forecast::getWeather).distinct().collect(Collectors.joining(&quot;, &quot;));</b>
+&nbsp;
+<b class="nc">&nbsp;                        return new Forecast(entry.getKey(), avgTemp, maxTemp, minTemp, weatherDescriptions);</b>
+<b class="nc">&nbsp;                    }).sorted(Comparator.comparing(Forecast::getDate)).limit(numberOfDays).collect(Collectors.toList());</b>
+<b class="nc">&nbsp;        } catch (HttpClientErrorException.NotFound exception) {</b>
+<b class="nc">&nbsp;            logger.error(String.format(Constant.CITY_NOT_FOUND_EXCEPTION, cityName, Instant.now().toString()));</b>
+<b class="nc">&nbsp;            throw new GlobalException(String.format(Constant.CITY_NOT_FOUND, cityName));</b>
+<b class="nc">&nbsp;        } catch (HttpClientErrorException.Unauthorized exception) {</b>
+<b class="nc">&nbsp;            logger.error(String.format(Constant.UNAUTHORIZED_ACCESS_EXCEPTION, Instant.now().toString()));</b>
+<b class="nc">&nbsp;            throw new GlobalException(Constant.UNAUTHORIZED_ACCESS);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-12-06 05:26</div>
+</div>
+</body>
+</html>

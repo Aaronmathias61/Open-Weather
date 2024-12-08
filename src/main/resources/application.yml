@@ -1,0 +1,44 @@
+
+spring:
+  application:
+    name: demo
+  profiles:
+    active: dev
+
+  output:
+    ansi:
+      enabled: always
+  cache:
+    type : caffeine
+    caffeine:
+      spec: expireAfterWrite=5m
+
+weather:
+  api:
+    key: 15e82164053ef8788d7a867816769d48
+  url: "https://api.openweathermap.org/data/2.5/weather?q=%s&appid=%s"
+forecast:
+  url: "https://api.openweathermap.org/data/2.5/forecast?lat=%f&lon=%f&appid=%s"
+geocode:
+  url: "http://api.openweathermap.org/geo/1.0/direct?q=%s&limit=1&appid=%s"
+resilience4j:
+  retry:
+    instances:
+      demo:
+        maxRetryAttempts: 5
+        waitDuration: 10s
+        ignore-exceptions:
+          - com.sample.demo.exception.GlobalException
+management:
+  metrics:
+    export:
+      prometheus:
+        enabled: false
+  endpoints:
+    web:
+      exposure:
+        include: metrics
+  endpoint:
+    metrics:
+      enabled: true
+

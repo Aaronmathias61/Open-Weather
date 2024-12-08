@@ -1,0 +1,104 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > WeatherResponse</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.sample.demo.model</a>
+</div>
+
+<h1>Coverage Summary for Class: WeatherResponse (com.sample.demo.model)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">WeatherResponse</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.sample.demo.model;
+&nbsp;
+&nbsp;import com.fasterxml.jackson.annotation.JsonProperty;
+&nbsp;import lombok.Data;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;@Data
+&nbsp;public class WeatherResponse {
+&nbsp;
+&nbsp;    @JsonProperty(&quot;name&quot;)
+&nbsp;    private String city;
+&nbsp;    @JsonProperty(&quot;id&quot;)
+&nbsp;    private String cityId;
+&nbsp;    @JsonProperty(&quot;timezone&quot;)
+&nbsp;    private String timezone;
+&nbsp;    @JsonProperty(&quot;coord&quot;)
+&nbsp;    private Coordinates coordinates;
+&nbsp;    @JsonProperty(&quot;weather&quot;)
+&nbsp;    private List&lt;Weather&gt; weather;
+&nbsp;    @JsonProperty(&quot;base&quot;)
+&nbsp;    private String base;
+&nbsp;    @JsonProperty(&quot;main&quot;)
+&nbsp;    private MainTemperature mainTemperature;
+&nbsp;    @JsonProperty(&quot;visibility&quot;)
+&nbsp;    private Integer visibility;
+&nbsp;    @JsonProperty(&quot;wind&quot;)
+&nbsp;    private Wind wind;
+&nbsp;    @JsonProperty(&quot;clouds&quot;)
+&nbsp;    private Clouds clouds;
+&nbsp;    @JsonProperty(&quot;dt&quot;)
+&nbsp;    private Long dateTime;
+&nbsp;    @JsonProperty(&quot;sys&quot;)
+&nbsp;    private RiseAndSet riseAndSet;
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-12-05 00:06</div>
+</div>
+</body>
+</html>

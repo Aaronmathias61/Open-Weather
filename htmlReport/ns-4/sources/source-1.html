@@ -1,0 +1,218 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > WeatherController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.sample.demo.controller</a>
+</div>
+
+<h1>Coverage Summary for Class: WeatherController (com.sample.demo.controller)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">WeatherController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    20%
+  </span>
+  <span class="absValue">
+    (1/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    18.2%
+  </span>
+  <span class="absValue">
+    (8/44)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.sample.demo.controller;
+&nbsp;
+&nbsp;import com.sample.demo.constant.Constant;
+&nbsp;import com.sample.demo.exception.GlobalException;
+&nbsp;import com.sample.demo.model.APIResponse;
+&nbsp;import com.sample.demo.service.WeatherService;
+&nbsp;import io.github.resilience4j.retry.annotation.Retry;
+&nbsp;import io.micrometer.core.instrument.Counter;
+&nbsp;import jakarta.servlet.http.HttpServletRequest;
+&nbsp;import org.slf4j.Logger;
+&nbsp;import org.slf4j.LoggerFactory;
+&nbsp;import org.springframework.cache.Cache;
+&nbsp;import org.springframework.cache.CacheManager;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.web.bind.annotation.GetMapping;
+&nbsp;import org.springframework.web.bind.annotation.RequestMapping;
+&nbsp;import org.springframework.web.bind.annotation.RequestParam;
+&nbsp;import org.springframework.web.bind.annotation.RestController;
+&nbsp;
+&nbsp;import java.time.Instant;
+&nbsp;
+&nbsp;@RestController
+&nbsp;@RequestMapping(&quot;/api&quot;)
+&nbsp;public class WeatherController {
+<b class="fc">&nbsp;    Logger logger = LoggerFactory.getLogger(WeatherService.class);</b>
+&nbsp;    private final WeatherService weatherService;
+&nbsp;    private final HttpServletRequest httpServletRequest;
+&nbsp;
+&nbsp;    private final Counter totalRequestsCounter;
+&nbsp;
+&nbsp;    private final Counter cacheHitsCounter;
+&nbsp;    private final Counter cacheMissesCounter;
+&nbsp;    private final CacheManager cacheManager;
+&nbsp;
+&nbsp;    public WeatherController(
+&nbsp;            WeatherService weatherService,
+&nbsp;            HttpServletRequest httpServletRequest,
+<b class="fc">&nbsp;            Counter totalRequestsCounter, Counter cacheHitsCounter, Counter cacheMissesCounter, CacheManager cacheManager) {</b>
+<b class="fc">&nbsp;        this.weatherService = weatherService;</b>
+<b class="fc">&nbsp;        this.httpServletRequest = httpServletRequest;</b>
+<b class="fc">&nbsp;        this.totalRequestsCounter = totalRequestsCounter;</b>
+<b class="fc">&nbsp;        this.cacheHitsCounter = cacheHitsCounter;</b>
+<b class="fc">&nbsp;        this.cacheMissesCounter = cacheMissesCounter;</b>
+<b class="fc">&nbsp;        this.cacheManager = cacheManager;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;/weather&quot;)
+&nbsp;    @Retry(name = Constant.DEMO, fallbackMethod = Constant.GET_WHETHER_CALLBACK)
+&nbsp;    public ResponseEntity&lt;APIResponse&gt; getWeather(
+&nbsp;            @RequestParam String cityName) throws Exception {
+<b class="nc">&nbsp;        logger.info(Constant.API_LOGGER, Instant.now().toString(),</b>
+<b class="nc">&nbsp;                httpServletRequest.getMethod(), httpServletRequest.getRequestURI());</b>
+<b class="nc">&nbsp;        totalRequestsCounter.increment();</b>
+<b class="nc">&nbsp;        String cacheKey = String.format(Constant.WEATHER, cityName);</b>
+<b class="nc">&nbsp;        Cache cache = cacheManager.getCache(Constant.SIMPLE);</b>
+&nbsp;
+<b class="nc">&nbsp;        if (cache != null &amp;&amp; cache.get(cacheKey) != null) {</b>
+<b class="nc">&nbsp;            cacheHitsCounter.increment();</b>
+<b class="nc">&nbsp;            logger.info(String.format(Constant.CACHE_HITS, cityName));</b>
+&nbsp;
+&nbsp;        } else {
+<b class="nc">&nbsp;            logger.info(String.format(Constant.CACHE_MISSES,cityName));</b>
+<b class="nc">&nbsp;            cacheMissesCounter.increment();</b>
+<b class="nc">&nbsp;            weatherService.getWeather(cityName);</b>
+<b class="nc">&nbsp;            if (cache != null) {</b>
+<b class="nc">&nbsp;                cache.put(cacheKey, cityName);</b>
+&nbsp;            }
+&nbsp;        }
+<b class="nc">&nbsp;        return ResponseEntity.ok().body(new APIResponse(Constant.SUCCESS,</b>
+<b class="nc">&nbsp;                weatherService.getWeather((cityName))));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;/forecast&quot;)
+&nbsp;    @Retry(name = Constant.DEMO, fallbackMethod = Constant.GET_FORECAST_CALLBACK)
+&nbsp;    public ResponseEntity&lt;APIResponse&gt; getWeatherForecast(
+&nbsp;            @RequestParam String cityName,
+&nbsp;            @RequestParam Integer numberOfDays) {
+<b class="nc">&nbsp;        logger.info(Constant.API_LOGGER, Instant.now().toString(),</b>
+<b class="nc">&nbsp;                httpServletRequest.getMethod(), httpServletRequest.getRequestURI());</b>
+<b class="nc">&nbsp;        totalRequestsCounter.increment();</b>
+<b class="nc">&nbsp;        String cacheKey = String.format(Constant.FORECAST, cityName);</b>
+<b class="nc">&nbsp;        Cache cache = cacheManager.getCache(Constant.SIMPLE);</b>
+&nbsp;
+<b class="nc">&nbsp;        if (cache != null &amp;&amp; cache.get(cacheKey) != null) {</b>
+<b class="nc">&nbsp;            cacheHitsCounter.increment();</b>
+<b class="nc">&nbsp;            logger.info(String.format(Constant.CACHE_HITS, cityName));</b>
+&nbsp;
+&nbsp;        } else {
+<b class="nc">&nbsp;            logger.info(String.format(Constant.CACHE_MISSES,cityName));</b>
+<b class="nc">&nbsp;            cacheMissesCounter.increment();</b>
+<b class="nc">&nbsp;            weatherService.getWeatherForecast(cityName,numberOfDays);</b>
+<b class="nc">&nbsp;            if (cache != null) {</b>
+<b class="nc">&nbsp;                cache.put(cacheKey, cityName);</b>
+&nbsp;            }
+&nbsp;        }
+<b class="nc">&nbsp;        return ResponseEntity.ok().body(new APIResponse(Constant.SUCCESS,</b>
+<b class="nc">&nbsp;                weatherService.getWeatherForecast(cityName, numberOfDays)));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public ResponseEntity&lt;APIResponse&gt; getWeatherCallBack(Exception exception) {
+<b class="nc">&nbsp;        if (exception instanceof GlobalException) {</b>
+<b class="nc">&nbsp;            throw (GlobalException) exception;</b>
+&nbsp;
+&nbsp;        }
+<b class="nc">&nbsp;        throw new GlobalException(Constant.RESOURCE_NOT_FOUND);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public ResponseEntity&lt;APIResponse&gt; getWeatherForecastCallBack(Exception exception) {
+<b class="nc">&nbsp;        if (exception instanceof GlobalException) {</b>
+<b class="nc">&nbsp;            throw (GlobalException) exception;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        throw new GlobalException(Constant.RESOURCE_NOT_FOUND);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-12-06 05:26</div>
+</div>
+</body>
+</html>
